@@ -1,0 +1,12 @@
+Private key: cPsuz3nV6uCbjtrSckNH5u3u83hq5nB12eZBdKDb5D5dKJJoZ69i
+Address: myRxZGcdL5WDmMz7J718djW7v1nxk1jjY2
+
+
+We sent 0.01049899 bitcoins to address
+myRxZGcdL5WDmMz7J718djW7v1nxk1jjY2
+
+tx: 02d6ee08cd6effadd530cbea4fc51a14d26b0b74707062f2e27252750571789a
+
+Send coins back, when you don't need them anymore to the address
+
+mv4rnyY3Su5gjcDNzbMLKBQkBicCtHUtFB

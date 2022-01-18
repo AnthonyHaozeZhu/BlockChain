@@ -1,0 +1,101 @@
+%! Tex program = xelatex   
+\documentclass{article}
+\usepackage[left=2cm, right=2cm, lines=45, top=0.8in, bottom=0.7in]{geometry}
+\usepackage{xeCJK}
+\usepackage{amsmath}
+\usepackage{booktabs} %表格
+\usepackage{forest}
+\setmainfont{Times New Roman}
+\setCJKmainfont{Songti SC}
+\setCJKfamilyfont{song}{Songti SC}
+%-----------------------伪代码------------------
+\usepackage{algorithm}  
+\usepackage{algorithmicx}  
+\usepackage{algpseudocode}  
+\floatname{algorithm}{Algorithm}  
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}  
+\renewcommand{\algorithmicensure}{\textbf{Output:}} 
+\usepackage{lipsum}  
+\makeatletter
+\newenvironment{breakablealgorithm}
+  {% \begin{breakablealgorithm}
+  \begin{center}
+     \refstepcounter{algorithm}% New algorithm
+     \hrule height.8pt depth0pt \kern2pt% \@fs@pre for \@fs@ruled
+     \renewcommand{\caption}[2][\relax]{% Make a new \caption
+      {\raggedright\textbf{\ALG@name~\thealgorithm} ##2\par}%
+      \ifx\relax##1\relax % #1 is \relax
+         \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##2}%
+      \else % #1 is not \relax
+         \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##1}%
+      \fi
+      \kern2pt\hrule\kern2pt
+     }
+  }{% \end{breakablealgorithm}
+     \kern2pt\hrule\relax% \@fs@post for \@fs@ruled
+  \end{center}
+  }
+\makeatother
+%------------------------代码-------------------
+\usepackage{xcolor} 
+\usepackage{listings} 
+\usepackage{fontspec}
+\newfontfamily\menlo{Menlo}
+\setmonofont[Mapping={}]{Monaco} 
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\lstset{ %
+backgroundcolor=\color{white},   % choose the background color
+basicstyle=\footnotesize\ttfamily,        % size of fonts used for the code
+columns=fullflexible,
+breaklines=true,                 % automatic line breaking only at whitespace
+captionpos=b,                    % sets the caption-position to bottom
+tabsize=4,
+commentstyle=\color{mygreen},    % comment style
+escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+keywordstyle=\color{blue},       % keyword style
+stringstyle=\color{mymauve}\ttfamily,     % string literal style
+frame=single,
+rulesepcolor=\color{red!20!green!20!blue!20},
+numbers=left,
+ numberstyle=\tiny\menlo
+% identifierstyle=\color{red},
+% language=c++,
+}
+\begin{document}
+\title{区块链第一次书面作业}
+\author{朱浩泽 1911530 计算机科学与技术}
+\maketitle
+\section{多元 Merkle 树问题}
+\subsection{问题a}
+\large
+画出其Merkle树如下图所示：\\
+\begin{forest}
+[
+  Top\ Hash
+  [Hash\ 0[T1][T2][T3]]
+  [Hash\ 1[T4][T5][T6]]
+  [Hash\ 2[T7][T8][T9]]
+]
+\end{forest}
+\\通过上图可以看出，如果Alice想向Bob证明T4 在 S 中，则先需要T5和T6的值，通过Hash函数算出Hash\ 1的值，再利用Hash\ 0和Hash\ 2的值同算出的计算出的Hash\ 1的值通过Hash函数计算出Top\ Hash的值，与获得的可行的Top\ Hash值进行对比，便可检验出T4 在 S 中。其中我们利用了T5、T6、Hash\ 0、Hash\ 1的值。
+\subsection{问题b}
+\large
+记一共有$n$个元素，每个非叶节点最多可以有$k$个子节点，则此Merkle树有$\lceil \log_kn \rceil +1$层，除去Top\ Hash，每一层的证明需要$(k-1)$个元素，所以其证明长度为$(k-1)\times (\lceil \log_kn \rceil +1-1)=(k-1)\times \lceil \log_kn \rceil$。
+\subsection{问题c}
+\begin{align*}
+&\lim_{n\rightarrow \infty}\frac{(3-1)\times \log_3n}{(2-1)\times \log_2n}\\
+=&\lim_{n\rightarrow \infty}2\times \frac{\log_3n}{\log_2n}\\
+=&\lim_{n\rightarrow \infty}2\times \frac{\log_n2}{\log_n3}\\
+=& 2\times \log_32\\
+=& 1.2619 > 1
+\end{align*}
+由此可见，最好使用二叉默克尔树。
+\newpage
+\section{分层确定性钱包}
+\large 
+如果将$H(k||i)$换成$k+i$，第$i$个公钥为$g^{x_i} = g^{k+i}g^y$,则第$i+1$个公钥为$g^{x_{i+1}} = g^{k+i+1}g^y = g^{x_i}g$\\
+于此同时，第$i$个私钥为$x_i = y + k + i$,则第$i+1$个私钥为$x_{i+1} = y + k +i + 1 = x_{i} + 1$\\
+由此可见，知道一个公钥的来源后，通过简单的乘法计算，可以轻松判定这些公钥来自同一个钱包。与此同时，如果某一天有人猜出来了g的值，通过第$i$个公钥和g的值推算出了$x_i$的值，那么如果我们使用的是$H(k||i)$函数的话，也无法通过这个泄漏的私钥匙推算出其他的私钥；但如果使用的是$k+i$函数的话，只需要简单进行+1计算，便可得知所有的公钥和私钥对，从而盗走所有比特币。所以这种算法也可能会影响安全性。
+\end{document}
